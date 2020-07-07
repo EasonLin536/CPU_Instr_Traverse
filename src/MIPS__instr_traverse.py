@@ -44,8 +44,8 @@ def instr_decode(curr_instr):
 def print_reg(registers):
     # for i in range(len(registers)):
     for i in range(32):
-        print(f'[{i}] {registers[i].dec()}', end='\t')
-        if (i + 1) % 8 == 0:
+        print(f'[{i}]\t{registers[i].dec()}', end='\t')
+        if (i + 1) % 4 == 0:
             print()
 
 
