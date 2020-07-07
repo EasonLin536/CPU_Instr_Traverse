@@ -1,6 +1,12 @@
 class BitStr():
-    
+# === initialize class ===
     def __init__(self, value=None, bit_str=None, bit_len=32, complement2=True):
+        """
+        initialize BitStr
+        args: parse in wither value or bit_str 
+            value: decimal value and convert to bit string
+            bit_str: bit string, length < bit_len
+        """
         self.bit_len = bit_len
         self.complement2 = complement2
         if value == None:
@@ -9,11 +15,11 @@ class BitStr():
             self.bit_str = self.dec2complement2(value)
     
 # === operator overloading ===
+    # ~BitStr
     def __invert__(self):
         return BitStr(bit_str=self.negate(self.bit_str))
-        # return self.negate(self.bit_str)
 
-
+    # BitStr + BitStr or BitStr + int
     def __add__(self, other): # can add integer for addi
         if isinstance(other, int):
             value = self.dec() + other
@@ -21,7 +27,7 @@ class BitStr():
             value = self.dec() + other.dec()
         return BitStr(value=value)
 
-
+    # BitStr - BitStr or BitStr - int
     def __sub__(self, other):
         if isinstance(other, int):
             value = self.dec() - other
@@ -29,7 +35,7 @@ class BitStr():
             value = self.dec() - other.dec()
         return BitStr(value=value)
 
-
+    # BitStr * BitStr or BitStr * int and return HI and LO
     def __mul__(self, other):
         if isinstance(other, int):
             value = self.dec() * other
@@ -38,9 +44,12 @@ class BitStr():
 
         mult_bit_str = self.dec2complement2(num=value, bit_len=self.bit_len * 2)
         
-        return BitStr(bit_str=mult_bit_str[0:self.bit_len]), BitStr(bit_str=mult_bit_str[self.bit_len:self.bit_len * 2])
+        HI = BitStr(bit_str=mult_bit_str[0:self.bit_len])
+        LO = BitStr(bit_str=mult_bit_str[self.bit_len:self.bit_len * 2])
 
+        return HI, LO 
 
+    # BitStr / BitStr or BitStr / int and return HI and LO
     def __truediv__(self, other):
         if isinstance(other, int):
             quotient = self.dec() // other
@@ -48,38 +57,41 @@ class BitStr():
         else: 
             quotient = self.dec() // other.dec()
             remainder = self.dec() % other.dec()
+
+        HI = BitStr(value=remainder)
+        LO = BitStr(value=quotient)
         
-        return BitStr(value=remainder), BitStr(value=quotient)
+        return HI, LO
 
-
+    # BitStr < BitStr or BitStr < int
     def __lt__(self, other):
         if isinstance(other, int):
             return self.dec() < other
         else: 
             return self.dec() < other.dec()
 
-
+    # BitStr > BitStr or BitStr > int
     def __gt__(self, other):
         if isinstance(other, int):
             return self.dec() > other
         else: 
             return self.dec() > other.dec()
 
-
+    # BitStr == BitStr or BitStr == int
     def __eq__(self, other):
         if isinstance(other, int):
             return self.dec() == other
         else: 
             return self.dec() == other.dec()
 
-
+    # BitStr != BitStr or BitStr != int
     def __ne__(self, other):
         if isinstance(other, int):
             return self.dec() != other
         else: 
             return self.dec() != other.dec()
 
-
+    # BitStr << int
     def __lshift__(self, sh):
         shifted_bit_str = ''
         for i in range(self.bit_len):
@@ -91,7 +103,7 @@ class BitStr():
 
         return BitStr(bit_str=shifted_bit_str)
 
-
+    # BitStr >> int
     def __rshift__(self, sh):
         shifted_bit_str = ''
         for i in range(self.bit_len):
@@ -103,7 +115,7 @@ class BitStr():
 
         return BitStr(bit_str=shifted_bit_str)
 
-
+    # BitStr & BitStr or BitStr & int
     def __and__(self, other):
         if isinstance(other, int):
             other_bit_str = BitStr(value=other).bin()
@@ -119,7 +131,7 @@ class BitStr():
 
         return BitStr(bit_str=and_bit_str)
 
-
+    # BitStr | BitStr or BitStr | int
     def __or__(self, other):
         if isinstance(other, int):
             other_bit_str = BitStr(value=other).bin()
@@ -135,7 +147,7 @@ class BitStr():
 
         return BitStr(bit_str=or_bit_str)
 
-
+    # BitStr ^ BitStr or BitStr ^ int
     def __xor__(self, other):
         if isinstance(other, int):
             other_bit_str = BitStr(value=other).bin()
@@ -153,6 +165,7 @@ class BitStr():
 
 
 # === utils ===
+    # transform number to 2's complement bit string
     def dec2complement2(self, num, bit_len=None):
         if bit_len == None:
             bit_len = self.bit_len
@@ -169,8 +182,8 @@ class BitStr():
             
             return negate_dec_str[len(negate_dec_str)-bit_len:len(negate_dec_str)]
 
-
-    def negate(self, bit_str):
+    # input bit string, return negated bit string
+     def negate(self, bit_str):
         negate_bit_str = ''
         for i in range(len(bit_str)):
             if bit_str[i] == '0':
@@ -180,7 +193,7 @@ class BitStr():
 
         return negate_bit_str
 
-    
+    # shift right arithmetic
     def sra(self, sh):
         shifted_bit_str = ''
         sign_bit = self.bit_str[0]
@@ -205,10 +218,8 @@ class BitStr():
         else:
             return int(self.bit_str, 2)
 
-    
     def bin(self):
         return self.bit_str
-
-
+        
     def hex(self):
         return '{:0{}X}'.format(int(self.bit_str, 2), self.bit_len // 4)
