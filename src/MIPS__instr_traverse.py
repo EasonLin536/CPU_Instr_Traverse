@@ -2,7 +2,7 @@ import sys
 import math
 from BitStr import BitStr
 
-
+"""Define Functions"""
 def readfile(fname):
     instr_list = []
     
@@ -130,6 +130,7 @@ def exec_instr(instr_list, curr_idx, registers):
         else:
             print('unk')
 
+    # J-type
     elif Op == '000010':
         print(f'j {hex(int(j_addr, 2))}')
         curr_idx = int(j_addr, 2) - 1 # -1: idx + 1 in the end
@@ -139,6 +140,7 @@ def exec_instr(instr_list, curr_idx, registers):
         registers[31] = BitStr((curr_idx + 1) * 4)
         curr_idx = int(j_addr, 2) - 1 # -1: idx + 1 in the end
     
+    # B-type
     elif Op == '000100':
         print(f'beq r{rs} r{rt} {hex(imm)}')
         if registers[rs] == registers[rt]:
@@ -148,22 +150,11 @@ def exec_instr(instr_list, curr_idx, registers):
         print(f'bne r{rs} r{rt} {hex(imm)}')
         if registers[rs] != registers[rt]:
             curr_idx = int((curr_idx + imm) % math.pow(2, 14))
-
+  
+    # I-type
     elif Op == '001000':
         print(f'addi r{rt} r{rs} {imm}')
         registers[rt] = registers[rs] + imm
-    
-    elif Op == '100011':
-        print(f'lw r{rt} r{rs} {imm}')
-        mem_idx = (registers[rs] + imm).dec() // 4
-        registers[rt] = D_mem[mem_idx]
-        print(f"load D_mem[{mem_idx}]={D_mem[mem_idx].dec()} to r{rt}")
-    
-    elif Op == '101011':
-        print(f'sw r{rt} r{rs} {imm}')
-        mem_idx = (registers[rs] + imm).dec() // 4
-        D_mem[mem_idx] = registers[rt]
-        print(f"store r{rt}={registers[rt].dec()} to D_mem[{mem_idx}]")
     
     elif Op == '001010':
         print(f'slti r{rt} r{rs} {imm}')
@@ -182,13 +173,27 @@ def exec_instr(instr_list, curr_idx, registers):
         print(f'xori r{rt} r{rs} {imm}')
         registers[rt] = registers[rs] ^ imm
     
+    # Load
+    elif Op == '100011':
+        print(f'lw r{rt} r{rs} {imm}')
+        mem_idx = (registers[rs] + imm).dec() // 4
+        registers[rt] = D_mem[mem_idx]
+        print(f"load D_mem[{mem_idx}]={D_mem[mem_idx].dec()} to r{rt}")
+    
+    # Store
+    elif Op == '101011':
+        print(f'sw r{rt} r{rs} {imm}')
+        mem_idx = (registers[rs] + imm).dec() // 4
+        D_mem[mem_idx] = registers[rt]
+        print(f"store r{rt}={registers[rt].dec()} to D_mem[{mem_idx}]")
+    
     else:
         print('unk')
 
     # update curr_idx
     return curr_idx + 1
 
-
+"""Main"""
 # define
 fname     = sys.argv[1]
 registers = [BitStr(value=0)] * 34 # 2 for HI & LO
