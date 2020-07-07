@@ -1,3 +1,5 @@
+import math
+
 class BitStr():
 # === initialize class ===
     def __init__(self, value=None, bit_str=None, bit_len=32, complement2=True):
@@ -12,6 +14,9 @@ class BitStr():
         if value == None:
             self.bit_str = '0' * (bit_len - len(bit_str)) + bit_str
         else: # convert with 2's complement
+            # avoid overload
+            if abs(value) >= math.pow(2, 16):
+                value = int(value % math.pow(2, 16))
             self.bit_str = self.dec2complement2(value)
     
 # === operator overloading ===
@@ -183,7 +188,7 @@ class BitStr():
             return negate_dec_str[len(negate_dec_str)-bit_len:len(negate_dec_str)]
 
     # input bit string, return negated bit string
-     def negate(self, bit_str):
+    def negate(self, bit_str):
         negate_bit_str = ''
         for i in range(len(bit_str)):
             if bit_str[i] == '0':
@@ -220,6 +225,6 @@ class BitStr():
 
     def bin(self):
         return self.bit_str
-        
+
     def hex(self):
         return '{:0{}X}'.format(int(self.bit_str, 2), self.bit_len // 4)
