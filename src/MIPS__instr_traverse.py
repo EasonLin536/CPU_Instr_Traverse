@@ -44,7 +44,7 @@ def instr_decode(curr_instr):
 def print_reg(registers):
     # for i in range(len(registers)):
     for i in range(32):
-        print(f'[{i}] {registers[i].dec()}', end=' ')
+        print(f'[{i}] {registers[i].dec()}', end='\t')
         if (i + 1) % 8 == 0:
             print()
 
@@ -193,9 +193,13 @@ def exec_instr(instr_list, curr_idx, registers):
 fname     = sys.argv[1]
 registers = [BitStr(value=0)] * 34 # 2 for HI & LO
 D_mem     = [BitStr(value=0)] * 1024
-# HI        = BitStr(value=0)
-# LO        = BitStr(value=0)
 
+# output instructions 1 by 1 or not
+one_at_a_time = True
+if int(sys.argv[2]) == 0: 
+    one_at_a_time = False
+else: 
+    one_at_a_time = True
 
 # get all instructions
 instr_list = []
@@ -204,6 +208,10 @@ instr_list = readfile(fname)
 index = 0
 curr_idx = 0
 while (curr_idx < len(instr_list)):
+    if one_at_a_time:
+        cmd = input()
+        if cmd != '': break
+
     print(f'\n[{index}]', end=' ')
     # execute instruction and update curr_idx
     curr_idx = exec_instr(instr_list, curr_idx, registers)
