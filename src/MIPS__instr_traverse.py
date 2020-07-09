@@ -18,17 +18,10 @@ def readfile(fname):
     return instr_list
 
 
-def get_instr(instr_list, I_mem_addr):
-    """
-    instr_list: list of binary strings
-    I_mem_addr: BitStr memory address -> integer index
-    """
-    idx = I_mem_addr.dec() // 4
-    
-    return instr_list[idx]
-
-
 def instr_decode(curr_instr):
+    """
+    curr_instr: 32 bit string
+    """
     Op     = curr_instr[0:6]           # string
     funct  = curr_instr[26:32]         # string
     rs     = int(curr_instr[6 :11], 2) # int
