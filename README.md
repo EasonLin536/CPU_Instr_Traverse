@@ -73,8 +73,13 @@ load D_mem[4]=89 to r8
 ```
 
 ## Usage
+### MIPS
 ```bash
 python3 src/MIPS_instr_traverse.py [pattern file] [mode]
+```
+### RISC-V
+```bash
+python3 src/RISCV_instr_traverse.py [pattern file] [mode]
 ```
 `pattern file` is the path of the pattern file
 

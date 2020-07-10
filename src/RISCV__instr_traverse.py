@@ -74,124 +74,125 @@ def exec_instr(instr_list, curr_idx, registers):
     # get instruction
     curr_instr = instr_list[curr_idx]
     # decode instruction
-    Op, funct, rs, rt, rd, sa, j_addr, imm = instr_decode(curr_instr)
+    Op, rs1, rs2, rd, funct3, funct7, imm = instr_decode(curr_instr)
     
     print(f'addr:{hex(curr_idx * 4)}, instr:{hex(int(curr_instr, 2))}')
 
     # execute instruction
-    if int(curr_instr, 2) == 13: print('nop')
+    if int(curr_instr, 2) == 19: print('nop')
     # R-type
     elif Op == '0110011':
         if funct3 == '000':
             if funct7 == '0000000':
-                print(f'add r{rd} r{rs} r{rt}')
-                registers[rd] = registers[rs] + registers[rt]
-            elif funct7 == ''
-                print(f'sub r{rd} r{rs} r{rt}')
-                registers[rd] = registers[rs] - registers[rt]
+                print(f'add x{rd} x{rs1} x{rs2}')
+                registers[rd] = registers[rs1] + registers[rs2]
+            elif funct7 == '0100000':
+                print(f'sub x{rd} x{rs1} x{rs2}')
+                registers[rd] = registers[rs1] - registers[rs2]
         
         elif funct3 == '111':
-            print(f'and r{rd} r{rs} r{rt}')
-            registers[rd] = registers[rs] & registers[rt]
+            print(f'and x{rd} x{rs1} x{rs2}')
+            registers[rd] = registers[rs1] & registers[rs2]
 
         elif funct3 == '110':
-            print(f'or r{rd} r{rs} r{rt}')
-            registers[rd] = registers[rs] | registers[rt]
+            print(f'or x{rd} x{rs1} x{rs2}')
+            registers[rd] = registers[rs1] | registers[rs2]
 
         elif funct3 == '100':
-            print(f'xor r{rd} r{rs} r{rt}')
-            registers[rd] = registers[rs] ^ registers[rt]
+            print(f'xor x{rd} x{rs1} x{rs2}')
+            registers[rd] = registers[rs1] ^ registers[rs2]
         
-        elif funct3 == '001':
-            print(f'sll r{rd} r{rt} {sa}')
-            registers[rd] = registers[rt] << sa
+        # elif funct3 == '001':
+        #     print(f'sll x{rd} x{rt} {sa}')
+        #     registers[rd] = registers[rt] << sa
         
-        elif funct3 == '101':
-            if funct7 == '0000000'
-                print(f'srl r{rd} r{rt} {sa}')
-                registers[rd] = registers[rt] >> sa
+        # elif funct3 == '101':
+        #     if funct7 == '0000000'
+        #         print(f'srl x{rd} x{rt} {sa}')
+        #         registers[rd] = registers[rt] >> sa
             
-            elif funct7 == '0100000':
-                print(f'sra r{rd} r{rt} {sa}')
-                registers[rd] = registers[rt].sra(sa)   
+        #     elif funct7 == '0100000':
+        #         print(f'sra x{rd} x{rt} {sa}')
+        #         registers[rd] = registers[rt].sra(sa)   
         
-        elif funct3 == '010':
-            print(f'slt r{rd} r{rs} r{rt}')
-            if registers[rs] < registers[rt]: registers[rd] = BitStr(value=1)
-            else: registers[rd] = BitStr(value=0)
+        # elif funct3 == '010':
+        #     print(f'slt x{rd} x{rs} x{rt}')
+        #     if registers[rs] < registers[rt]: registers[rd] = BitStr(value=1)
+        #     else: registers[rd] = BitStr(value=0)
            
         else:
             print('unk')
     
     # jalr
     elif Op == '1100111':
-        print(f'jalr r{rd} r{rs}')
-            registers[rd] = BitStr(value=(curr_idx + 1) * 4)
-            curr_idx = registers[rs].dec() // 4 - 1 # -1: idx + 1 in the end
+        print(f'jalr x{rd} x{rs1} {imm.hex()}')
+        registers[rd] = BitStr(value=(curr_idx + 1) * 4)
+        curr_idx = (registers[rs1] + imm).dec() // 4 - 1 # -1: idx + 1 in the end
 
     # J-type
     elif Op == '1101111':
-        print(f'jal {hex(int(j_addr, 2))}')
-        registers[31] = BitStr((curr_idx + 1) * 4)
-        curr_idx = int(j_addr, 2) - 1 # -1: idx + 1 in the end
+        print(f'jal x{rd} {hex(imm.dec() // 2)}')
+        # TODO
+        registers[rd] = BitStr((curr_idx + 1) * 4)
+        curr_idx = curr_idx + imm.dec() // 4 - 1 # -1: idx + 1 in the end
     
     # B-type
     elif Op == '1100011':
         if funct3 == '000':
-            print(f'beq r{rs} r{rt} {hex(imm)}')
-            if registers[rs] == registers[rt]:
+            print(f'beq x{rs1} x{rs2} {imm.hex()}')
+            if registers[rs1] == registers[rs2]:
                 # TODO
-                # curr_idx = int((curr_idx + imm) % math.pow(2, 14))
+                curr_idx = (BitStr(value=curr_idx*4) + imm).dec() // 4
 
         elif funct3 == '001':
-            print(f'bne r{rs} r{rt} {hex(imm)}')
-            if registers[rs] != registers[rt]:
+            print(f'bne x{rs1} x{rs2} {imm.hex()}')
+            if registers[rs1] != registers[rs2]:
                 # TODO
-                # curr_idx = int((curr_idx + imm) % math.pow(2, 14))
+                curr_idx = (BitStr(value=curr_idx*4) + imm).dec() // 4
   
     # I-type
     elif Op == '0010011':
         if funct3 == '000':
-            print(f'addi r{rt} r{rs} {imm}')
+            print(f'addi x{rd} x{rs1} {imm.dec()}')
             # TODO
-            registers[rt] = registers[rs] + imm
+            registers[rd] = registers[rs1] + imm
     
         elif funct3 == '010':
-            print(f'slti r{rt} r{rs} {imm}')
+            print(f'slti x{rd} x{rs1} {imm.dec()}')
             # TODO
-            if registers[rs] < imm: registers[rt] = BitStr(value=1)
-            else: registers[rt] = BitStr(value=0)
+            if registers[rs1] < imm: registers[rd] = BitStr(value=1)
+            else: registers[rd] = BitStr(value=0)
     
         elif funct3 == '111':
-            print(f'andi r{rt} r{rs} {imm}')
+            print(f'andi x{rd} x{rs1} {imm.dec()}')
             # TODO
-            registers[rt] = registers[rs] & imm
+            registers[rd] = registers[rs1] & imm
     
         elif funct3 == '110':
-            print(f'ori r{rt} r{rs} {imm}')
+            print(f'ori x{rd} x{rs1} {imm.dec()}')
             # TODO
-            registers[rt] = registers[rs] | imm
+            registers[rd] = registers[rs1] | imm
     
         elif funct3 == '100':
-            print(f'xori r{rt} r{rs} {imm}')
+            print(f'xori x{rd} x{rs1} {imm.dec()}')
             # TODO
-            registers[rt] = registers[rs] ^ imm
+            registers[rd] = registers[rs1] ^ imm
     
     # Load
     elif Op == '0000011':
-        print(f'lw r{rt} r{rs} {imm}')
+        print(f'lw x{rs2} x{rs1} {imm.dec()}')
         # TODO
-        mem_idx = (registers[rs] + imm).dec() // 4
-        registers[rt] = D_mem[mem_idx]
-        print(f"load D_mem[{mem_idx}]={D_mem[mem_idx].dec()} to r{rt}")
+        mem_idx = (registers[rs1] + imm).dec() // 4
+        registers[rs2] = D_mem[mem_idx]
+        print(f"load D_mem[{mem_idx}]={D_mem[mem_idx].dec()} to x{rs2}")
     
     # Store
     elif Op == '0100011':
-        print(f'sw r{rt} r{rs} {imm}')
+        print(f'sw x{rs2} x{rs1} {imm.dec()}')
         # TODO
-        mem_idx = (registers[rs] + imm).dec() // 4
-        D_mem[mem_idx] = registers[rt]
-        print(f"store r{rt}={registers[rt].dec()} to D_mem[{mem_idx}]")
+        mem_idx = (registers[rs1] + imm).dec() // 4
+        D_mem[mem_idx] = registers[rs2]
+        print(f"store x{rs2}={registers[rs2].dec()} to D_mem[{mem_idx}]")
     
     else:
         print('unk')
@@ -201,6 +202,7 @@ def exec_instr(instr_list, curr_idx, registers):
 
 
 def print_reg(registers):
+    registers[0] = BitStr(value=0)
     # for i in range(len(registers)):
     for i in range(32):
         print(f'[{i}]\t{registers[i].dec()}', end='\t')
@@ -237,5 +239,5 @@ while (curr_idx < len(instr_list)):
     curr_idx = exec_instr(instr_list, curr_idx, registers)
     
     # print updated registers
-    # print_reg(registers)
+    print_reg(registers)
     index += 1
