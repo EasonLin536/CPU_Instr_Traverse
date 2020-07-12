@@ -115,10 +115,10 @@ def exec_instr(instr_list, curr_idx, registers):
         #         print(f'sra x{rd} x{rt} {sa}')
         #         registers[rd] = registers[rt].sra(sa)   
         
-        #elif funct3 == '010':
-        #    print(f'slt x{rd} x{rs1} x{rs2}')
-        #    if registers[rs1] < registers[rs2]: registers[rd] = BitStr(value=1)
-        #    else: registers[rd] = BitStr(value=0)
+        elif funct3 == '010':
+            print(f'slt x{rd} x{rs1} x{rs2}')
+            if registers[rs1] < registers[rs2]: registers[rd] = BitStr(value=1)
+            else: registers[rd] = BitStr(value=0)
            
         else:
             print('unk')
