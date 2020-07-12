@@ -115,10 +115,10 @@ def exec_instr(instr_list, curr_idx, registers):
         #         print(f'sra x{rd} x{rt} {sa}')
         #         registers[rd] = registers[rt].sra(sa)   
         
-        # elif funct3 == '010':
-        #     print(f'slt x{rd} x{rs} x{rt}')
-        #     if registers[rs] < registers[rt]: registers[rd] = BitStr(value=1)
-        #     else: registers[rd] = BitStr(value=0)
+        #elif funct3 == '010':
+        #    print(f'slt x{rd} x{rs1} x{rs2}')
+        #    if registers[rs1] < registers[rs2]: registers[rd] = BitStr(value=1)
+        #    else: registers[rd] = BitStr(value=0)
            
         else:
             print('unk')
@@ -180,11 +180,11 @@ def exec_instr(instr_list, curr_idx, registers):
     
     # Load
     elif Op == '0000011':
-        print(f'lw x{rs2} x{rs1} {imm.dec()}')
+        print(f'lw x{rd} x{rs1} {imm.dec()}')
         # TODO
         mem_idx = (registers[rs1] + imm).dec() // 4
-        registers[rs2] = D_mem[mem_idx]
-        print(f"load D_mem[{mem_idx}]={D_mem[mem_idx].dec()} to x{rs2}")
+        registers[rd] = D_mem[mem_idx]
+        print(f"load D_mem[{mem_idx}]={D_mem[mem_idx].dec()} to x{rd}")
     
     # Store
     elif Op == '0100011':
@@ -215,6 +215,11 @@ def print_reg(registers):
 fname     = sys.argv[1]
 registers = [BitStr(value=0)] * 32
 D_mem     = [BitStr(value=0)] * 1024
+
+"""
+D_mem[0]     = BitStr(value=1)
+D_mem[1]     = BitStr(value=1)
+"""
 
 # output instructions 1 by 1 or not
 one_at_a_time = True
