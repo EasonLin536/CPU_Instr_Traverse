@@ -102,18 +102,17 @@ def exec_instr(instr_list, curr_idx, registers):
             print(f'xor x{rd} x{rs1} x{rs2}')
             registers[rd] = registers[rs1] ^ registers[rs2]
         
-        # elif funct3 == '001':
-        #     print(f'sll x{rd} x{rt} {sa}')
-        #     registers[rd] = registers[rt] << sa
+        elif funct3 == '001':
+            print(f'sll x{rd} x{rs1} {rs2}')
+            registers[rd] = registers[rs1] << rs2
         
-        # elif funct3 == '101':
-        #     if funct7 == '0000000'
-        #         print(f'srl x{rd} x{rt} {sa}')
-        #         registers[rd] = registers[rt] >> sa
-            
-        #     elif funct7 == '0100000':
-        #         print(f'sra x{rd} x{rt} {sa}')
-        #         registers[rd] = registers[rt].sra(sa)   
+        elif funct3 == '101':
+            if funct7 == '0000000':
+                print(f'srl x{rd} x{rs1} {rs2}')
+                registers[rd] = registers[rs1] >> rs2
+            elif funct7 == '0100000':
+                print(f'sra x{rd} x{rs1} {rs2}')
+                registers[rd] = registers[rs1].sra(rs2)   
         
         elif funct3 == '010':
             print(f'slt x{rd} x{rs1} x{rs2}')
